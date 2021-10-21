@@ -64,17 +64,16 @@ def register(request):
         return render(request, "auctions/register.html")
 def create(request):
     if request.method=="POST":
-        if request.user.is_authenticated:
-            user=User.objects.get(pk=request.user.id)
-            title=request.POST.get("title")
-            desc=request.POST.get("description")
-            start_bid=int(request.POST.get("bid"))
-            List=Listing()
-            List.title=title
-            List.start_bid=start_bid
-            List.description=desc
-            List.user=user
-            List.save()
-            return HttpResponseRedirect(reverse('index'))
+        user=User.objects.get(pk=request.user.id)
+        title=request.POST.get("title")
+        desc=request.POST.get("description")
+        start_bid=int(request.POST.get("bid"))
+        List=Listing()
+        List.title=title
+        List.start_bid=start_bid
+        List.description=desc
+        List.user=user
+        List.save()
+        return HttpResponseRedirect(reverse('index'))
     else:
         return render(request,"auctions/create.html")
