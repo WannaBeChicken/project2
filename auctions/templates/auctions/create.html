@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create Listing</title>
+  </head>
+  <body>
+    <form action="{% url 'create'%}" method='post'>
+      {% csrf_token %}
+      Title:<input type="text" name="title"><br>
+      Description:<textarea name="description" rows="8" cols="80"></textarea><br>
+      Price:$<input type="text" name="bid"><br>
+      <input type="submit" value="Create">
+  </body>
+</html>
