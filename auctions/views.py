@@ -4,12 +4,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-
 from .models import *
-
-
+from django.db.models import Max
+import sys
 def index(request):
-    return render(request, "auctions/index.html")
+    data=Listing.objects.all()
+    return render(request, "auctions/index.html",{
+    "list": data
+    })
 
 
 def login_view(request):
@@ -62,18 +64,35 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
 def create(request):
     if request.method=="POST":
         user=User.objects.get(pk=request.user.id)
         title=request.POST.get("title")
         desc=request.POST.get("description")
         start_bid=int(request.POST.get("bid"))
-        List=Listing()
-        List.title=title
-        List.start_bid=start_bid
-        List.description=desc
-        List.user=user
-        List.save()
+        List=Listing.objects.create(user=user,title=title,description=desc,start_bid=start_bid)
         return HttpResponseRedirect(reverse('index'))
     else:
         return render(request,"auctions/create.html")
+
+def item(request,item_id):
+    if request.method=="POST":
+        user=User.objects.get(pk=request.user.id)
+        new_bid=int(request.POST.get("Bid"))
+        item=Listing.objects.get(pk=item_id)
+        if new_bid <= item.current_bid.bid:
+            return render (request,"auctions/item.html",{
+            'message': "Bid should be higher than current bid",
+            "item_id": item_id
+            })
+            sys.exit()
+        else:
+            bid=Bid.objects.create(user=user,item=item,bid=new_bid)
+            item.current_bid=bid
+            item.save()
+            return HttpResponseRedirect(reverse("index"))
+            sys.exit()
+    return render (request,"auctions/item.html",{
+    "item_id": item_id
+    })

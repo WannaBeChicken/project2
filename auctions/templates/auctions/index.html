@@ -1,7 +1,16 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+
     <h2>Active Listings</h2>
 
-    TODO
+    {% for item in list%}
+    <li>{{item.title}}
+      {% if item.current_bid.bid is None%}
+        <li>{{item.start_bid}}
+      {% else %}
+        <li>{{item.current_bid.bid}}
+      {%endif%}
+
+    {% endfor %}
 {% endblock %}

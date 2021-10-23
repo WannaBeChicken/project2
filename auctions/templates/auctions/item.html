@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bid</title>
+  </head>
+  <body>
+    <form method="post">
+      {% csrf_token %}
+      {%if message%}
+      {{message}}
+      Bid:<input type="text" name="Bid">
+      {%else%}
+      Bid:<input type="text" name="Bid">
+      {%endif%}
+      <input type="submit">
+    </form>
+  </body>
+</html>
