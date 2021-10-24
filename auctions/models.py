@@ -10,8 +10,8 @@ class Listing(models.Model):
     title=models.CharField(max_length=64)
     start_bid=models.IntegerField()
     description=models.CharField(max_length=200)
-    current_bid=models.ForeignKey('Bid',on_delete=models.CASCADE, blank=True,null=True)
-
+    current_bid=models.ForeignKey('Bid',on_delete=models.CASCADE,blank=True,null=True)
+    all_comments=models.ManyToManyField('Comment')
     def __str__(self):
         return f"{self.user}: {self.title}"
 
@@ -21,6 +21,11 @@ class Bid(models.Model):
     user=models.ForeignKey('User',on_delete=models.CASCADE)
     def __str__(self):
         return f"{self.bid}"
+
 class Comment(models.Model):
-    comment=models.CharField(max_length=200)
+    comment=models.CharField(max_length=200,blank=True,null=True)
     user=models.ForeignKey('User',on_delete=models.CASCADE)
+    item=models.ForeignKey('Listing',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.comment}"

@@ -5,12 +5,13 @@
     <h2>Active Listings</h2>
 
     {% for item in list%}
-    <li>{{item.title}}
+    <div><a href="{% url 'item' item.id %}">
+        <li>{{item.title}}
       {% if item.current_bid.bid is None%}
         <li>{{item.start_bid}}
       {% else %}
         <li>{{item.current_bid.bid}}
       {%endif%}
-
+    </a></div>
     {% endfor %}
 {% endblock %}

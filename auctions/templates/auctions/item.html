@@ -4,15 +4,36 @@
     <title>Bid</title>
   </head>
   <body>
+
+    <!-- Item Description -->
+    <h1>{{item.title}}<br></h1>
+    {{item.description}}<br>
+    {{item.current_bid.bid}}<br>
+
+    <!-- Bid input -->
     <form method="post">
       {% csrf_token %}
-      {%if message%}
-      {{message}}
-      Bid:<input type="text" name="Bid">
-      {%else%}
-      Bid:<input type="text" name="Bid">
+      {% if user.is_authenticated%}
+        {%if message%}
+
+          {{message}}
+          Amount:<input type="text" name="Bid">
+
+        {%else%}
+          Amount:<input type="text" name="Bid">
+
+        {%endif%}
+
+        <input type="submit" value="Bid">
+
+        <!-- Add a new Comment -->
+        <br>
+        Add a Comment:<input type="text" name="add_comment">
+        <input type="submit" value="Add">
       {%endif%}
-      <input type="submit">
     </form>
+    {% for  comment in all_comments %}
+      {{comment}}
+    {% endfor %}
   </body>
 </html>

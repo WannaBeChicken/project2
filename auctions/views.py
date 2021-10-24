@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 from django.db.models import Max
 import sys
+
+
 def index(request):
     data=Listing.objects.all()
     return render(request, "auctions/index.html",{
@@ -77,22 +79,38 @@ def create(request):
         return render(request,"auctions/create.html")
 
 def item(request,item_id):
+    item=Listing.objects.get(pk=item_id)
+    all_comments=item.all_comments.all()
     if request.method=="POST":
         user=User.objects.get(pk=request.user.id)
-        new_bid=int(request.POST.get("Bid"))
-        item=Listing.objects.get(pk=item_id)
-        if new_bid <= item.current_bid.bid:
-            return render (request,"auctions/item.html",{
-            'message': "Bid should be higher than current bid",
-            "item_id": item_id
-            })
+        new_bid=request.POST.get("Bid")
+        if new_bid is not '':
+            if int(new_bid) <= item.current_bid.bid:
+                return render (request,"auctions/item.html",{
+                'message': "Bid should be higher than current bid",
+                "item_id": item_id,
+                "item": item,
+                "all_comments": all_comments
+                })
+                sys.exit()
+            else:
+                bid=Bid.objects.create(user=user,item=item,bid=int(new_bid))
+                item.current_bid=bid
+                item.save()
+                return HttpResponseRedirect(reverse("index"))
+                sys.exit()
+
+        new_comment=request.POST.get("add_comment")
+        if new_comment is not '':
+            comment=Comment.objects.create(user=user,item=item,comment=new_comment)
+            item.all_comments.add(comment)
+            return HttpResponseRedirect(reverse('item', kwargs={'item_id': item_id}))
             sys.exit()
         else:
-            bid=Bid.objects.create(user=user,item=item,bid=new_bid)
-            item.current_bid=bid
-            item.save()
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('item', kwargs={'item_id': item_id}))
             sys.exit()
     return render (request,"auctions/item.html",{
-    "item_id": item_id
+    "item_id": item_id,
+    "item": item,
+    "all_comments": all_comments
     })
