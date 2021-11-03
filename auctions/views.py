@@ -73,6 +73,7 @@ def create(request):
         title=request.POST.get("title")
         desc=request.POST.get("description")
         start_bid=int(request.POST.get("bid"))
+        img=request.POST.get("image")
         List=Listing.objects.create(user=user,title=title,description=desc,start_bid=start_bid)
         return HttpResponseRedirect(reverse('index'))
     else:
@@ -80,10 +81,18 @@ def create(request):
 
 def item(request,item_id):
     item=Listing.objects.get(pk=item_id)
+    user=User.objects.get(pk=request.user.id)
+    wishlist=Wishlist.objects.get(users=user)
     all_comments=item.all_comments.all()
+    #-----------Updating Current Bid to Start Bid------------------
+    new_bid=request.POST.get("Bid")
+    if item.current_bid is None:
+        bid=Bid.objects.create(user=user,item=item,bid=int(item.start_bid))
+        item.current_bid=bid
+        item.save()
+    #--------------------------------------------------------------
     if request.method=="POST":
-        user=User.objects.get(pk=request.user.id)
-        new_bid=request.POST.get("Bid")
+    #------------------Bid---------------------------
         if new_bid is not '':
             if int(new_bid) <= item.current_bid.bid:
                 return render (request,"auctions/item.html",{
@@ -97,20 +106,40 @@ def item(request,item_id):
                 bid=Bid.objects.create(user=user,item=item,bid=int(new_bid))
                 item.current_bid=bid
                 item.save()
-                return HttpResponseRedirect(reverse("index"))
+                return HttpResponseRedirect(reverse("item" , kwargs={'item_id':item_id}))
                 sys.exit()
-
+    #-------------------Comment-----------------------------------
         new_comment=request.POST.get("add_comment")
         if new_comment is not '':
             comment=Comment.objects.create(user=user,item=item,comment=new_comment)
             item.all_comments.add(comment)
             return HttpResponseRedirect(reverse('item', kwargs={'item_id': item_id}))
             sys.exit()
-        else:
-            return HttpResponseRedirect(reverse('item', kwargs={'item_id': item_id}))
+    #-----------------------WishList-------------------------------
+        if 'wishlist' in request.POST:
+
+            wishlist.items.add(item)
+            return HttpResponseRedirect(reverse('item', kwargs={'item_id':item_id}))
             sys.exit()
-    return render (request,"auctions/item.html",{
-    "item_id": item_id,
-    "item": item,
-    "all_comments": all_comments
+
+    if item in wishlist.items.all():
+        return render (request,"auctions/item.html",{
+        "item_id": item_id,
+        "item": item,
+        "all_comments": all_comments,
+        "message_wishlist" : "Item Already Exists"
+        })
+    else:
+        return render (request,"auctions/item.html",{
+        "item_id": item_id,
+        "item": item,
+        "all_comments": all_comments,
+        })
+
+def wishlist(request):
+    user=User.objects.get(pk=request.user.id)
+    wishlist=Wishlist.objects.get(users=user)
+    wishitems=wishlist.items.all()
+    return render(request,"auctions/wishlist.html",{
+    "wishitems": wishitems
     })

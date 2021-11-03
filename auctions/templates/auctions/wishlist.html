@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Wishlist</title>
+  </head>
+  <body>
+    {% for item in wishitems %}
+      <div><a href="{% url 'item' item.id %}">
+          {{item.img}}
+          {{item.title}}<br>
+        {% if item.current_bid.bid is None%}
+          {{item.start_bid}}<br>
+        {% else %}
+          {{item.current_bid.bid}}<br>
+        {%endif%}
+    {%endfor%}
+  </body>
+</html>

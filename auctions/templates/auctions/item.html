@@ -9,7 +9,7 @@
     <h1>{{item.title}}<br></h1>
     {{item.description}}<br>
     {{item.current_bid.bid}}<br>
-
+    <img src="{{item.img}}" height=100 width=100>
     <!-- Bid input -->
     <form method="post">
       {% csrf_token %}
@@ -31,9 +31,15 @@
         Add a Comment:<input type="text" name="add_comment">
         <input type="submit" value="Add">
       {%endif%}
+      {% if message_wishlist%}
+        <br><input type="submit" name="wishlist_delete" value="Remove from Wishlist">
+      {%else%}
+        <br><input type="submit" name="wishlist" value="Add to Wishlist">
+      {%endif%}
     </form>
     {% for  comment in all_comments %}
-      {{comment}}
+      {{comment}}<br>
     {% endfor %}
+
   </body>
 </html>

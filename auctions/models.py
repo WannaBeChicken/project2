@@ -12,6 +12,7 @@ class Listing(models.Model):
     description=models.CharField(max_length=200)
     current_bid=models.ForeignKey('Bid',on_delete=models.CASCADE,blank=True,null=True)
     all_comments=models.ManyToManyField('Comment')
+    img=models.CharField(max_length=100)
     def __str__(self):
         return f"{self.user}: {self.title}"
 
@@ -29,3 +30,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.comment}"
+
+class Wishlist(models.Model):
+    users=models.ForeignKey('User',on_delete=models.CASCADE)
+    items=models.ManyToManyField('Listing')
