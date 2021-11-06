@@ -13,6 +13,7 @@ class Listing(models.Model):
     current_bid=models.ForeignKey('Bid',on_delete=models.CASCADE,blank=True,null=True)
     all_comments=models.ManyToManyField('Comment')
     img=models.CharField(max_length=100)
+    status=models.CharField(max_length=32,default='Open')
     def __str__(self):
         return f"{self.user}: {self.title}"
 

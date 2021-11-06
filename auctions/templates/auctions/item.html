@@ -4,16 +4,20 @@
     <title>Bid</title>
   </head>
   <body>
-
+    <a href="{% url 'index'%}">Home</a>
     <!-- Item Description -->
     <h1>{{item.title}}<br></h1>
     {{item.description}}<br>
     {{item.current_bid.bid}}<br>
     <img src="{{item.img}}" height=100 width=100>
-    <!-- Bid input -->
+    <!-- Open View -->
+
     <form method="post">
+
       {% csrf_token %}
       {% if user.is_authenticated%}
+      {%if user != item.user and item.status == 'Open'%}
+      <!-- Bid input -->
         {%if message%}
 
           {{message}}
@@ -30,13 +34,31 @@
         <br>
         Add a Comment:<input type="text" name="add_comment">
         <input type="submit" value="Add">
-      {%endif%}
+
+
+      <!-- Wishlist Button -->
       {% if message_wishlist%}
         <br><input type="submit" name="wishlist_delete" value="Remove from Wishlist">
       {%else%}
         <br><input type="submit" name="wishlist" value="Add to Wishlist">
       {%endif%}
+
+      <!-- Closing Bid -->
+    {% elif user == item.user and item.status == 'Open' %}
+      <br><input type="submit" value="Close Bid" name="close">
+
+    <!-- Winner View-->
+    {% elif item.status == 'Close' and  user == item.current_bid.user %}
+      Congratulations, You have won the bidding for ${{item.current_bid}} <br>
+
+    <!-- View for everyone else -->
+    {%else%}
+      Bidding is closed.
+
     </form>
+    {% endif %}
+    {% endif %}
+    <!-- Displaying Comments -->
     {% for  comment in all_comments %}
       {{comment}}<br>
     {% endfor %}
